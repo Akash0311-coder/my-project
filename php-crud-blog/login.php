@@ -1,47 +1,34 @@
 <?php
 session_start();
-require 'config.php';
+include 'config.php';
+
+$error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST["username"];
-    $password = $_POST["password"];
+    $username = trim($_POST["username"]);
+    $password = trim($_POST["password"]);
 
-    // Check user from DB
     $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
-
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
 
-    if ($user && password_verify($password, $user["password"])) {
-        $_SESSION["username"] = $user["username"];
+    if ($user && password_verify($password, $user['password'])) {
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['role'] = $user['role'];  // Store role
         header("Location: index.php");
         exit();
     } else {
-        $error = "Invalid username or password";
+        $error = "Invalid credentials.";
     }
 }
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
+<form method="POST">
     <h2>Login</h2>
-    <?php if (isset($error)) echo "<p style='color:red;'>$error</p>"; ?>
-    <form method="POST" action="login.php">
-        <label>Username:</label><br>
-        <input type="text" name="username" required><br><br>
-
-        <label>Password:</label><br>
-        <input type="password" name="password" required><br><br>
-
-        <button type="submit">Login</button>
-    </form>
-    <br>
-    <a href="register.php">Don't have an account? Register</a>
-</body>
-</html>
+    <span style="color:red;"><?php echo $error; ?></span><br><br>
+    <input type="text" name="username" placeholder="Username" required><br><br>
+    <input type="password" name="password" placeholder="Password" required><br><br>
+    <button type="submit">Login</button>
+</form>

@@ -1,7 +1,19 @@
-<?php include 'auth.php'; ?>
-<?php include 'config.php'; ?>
+include 'auth.php';
+if ($_SESSION['role'] !== 'admin') {
+    echo "Access Denied.";
+    exit();
+}
 <?php
-$id = $_GET["id"];
-$conn->query("DELETE FROM posts WHERE id=$id");
+include 'config.php';
+
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+
+    $stmt = $conn->prepare("DELETE FROM posts WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+}
+
 header("Location: index.php");
+exit();
 ?>

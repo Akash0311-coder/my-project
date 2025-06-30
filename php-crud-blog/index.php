@@ -54,9 +54,13 @@ $result = $stmt->get_result();
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>Blog Posts</h2>
         <div>
-            <span class="me-2">Welcome, <?php echo $_SESSION['username']; ?></span>
-            <a href="logout.php" class="btn btn-outline-danger btn-sm">Logout</a>
-            <a href="create.php" class="btn btn-success btn-sm ms-2">+ Add New Post</a>
+            <span class="me-2">
+  Welcome, <?php echo $_SESSION['username']; ?> 
+  (<?php echo ucfirst($_SESSION['role']); ?>)
+</span>
+<a href="logout.php" class="btn btn-outline-danger btn-sm">Logout</a>
+<a href="create.php" class="btn btn-success btn-sm ms-2">+ Add New Post</a>
+
         </div>
     </div>
 
@@ -74,8 +78,10 @@ $result = $stmt->get_result();
             <div class="card-body">
                 <h5 class="card-title"><?php echo htmlspecialchars($row['title']); ?></h5>
                 <p class="card-text"><?php echo nl2br(htmlspecialchars($row['content'])); ?></p>
-                <a href="edit.php?id=<?php echo $row['id']; ?>" class="btn btn-warning btn-sm">Edit</a>
-                <a href="delete.php?id=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</a>
+<?php if ($_SESSION['role'] === 'admin'): ?>
+    <a href="edit.php?id=<?php echo $row['id']; ?>">Edit</a>
+    <a href="delete.php?id=<?php echo $row['id']; ?>" onclick="return confirm('Are you sure?')">Delete</a>
+<?php endif; ?>
             </div>
         </div>
     <?php endwhile; ?>
